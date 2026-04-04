@@ -1,40 +1,43 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-enum Role{
+//  Enums
+
+enum Role {
   viewer
   analyst
   admin
 }
 
-enum Status{
+enum Status {
   active
   inactive
 }
 
-enum RecordType{
+enum RecordType {
   income
-  expenses
+  expense
 }
 
-model User{
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique
-  password String
-  role Role @default(viewer)
-  status Status @default(active)
-  records FinancialRecord[]
+//  Models 
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+
+  role      Role     @default(viewer)
+  status    Status   @default(active)
+
+  records   FinancialRecord[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -42,17 +45,21 @@ model User{
 }
 
 model FinancialRecord {
-  id Int @id @default(autoincrement())
-  amount Decimal @db.Decimal(15,2)
-  type RecordType
-  category String
-  date DateTime @db.Date
-  notes String?
-  createdBy User @relation(fields: [createdById], references: [id])
+  id          Int        @id @default(autoincrement())
+  amount      Decimal    @db.Decimal(15, 2)
+  type        RecordType
+  category    String
+  date        DateTime   @db.Date
+  notes       String?
+
+  createdBy   User       @relation(fields: [createdById], references: [id])
   createdById Int
-  deletedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  // Soft delete support
+  deletedAt   DateTime?
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@index([type])
   @@index([category])
