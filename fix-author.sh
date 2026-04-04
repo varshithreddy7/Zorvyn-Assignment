@@ -1,5 +1,4 @@
 #!/bin/bash
-
 git filter-branch --force --env-filter '
 export GIT_COMMITTER_NAME="Varshith Reddy Aileni"
 export GIT_COMMITTER_EMAIL="varshithreddy355@gmail.com"
