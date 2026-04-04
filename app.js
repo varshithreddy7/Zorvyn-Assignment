@@ -47,12 +47,11 @@ app.get("/health", (_req, res) => {
   });
 });
 
-// API Routes
-
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/records", recordRoutes);
-app.use("/api/dashboard", dashboardRoutes);
+// API Routes 
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/records", recordRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
 
 // 404 Handler 
 
