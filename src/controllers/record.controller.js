@@ -42,7 +42,7 @@ const getRecords = async (req, res, next) => {
       if (endDate) whereParams.date.lte = new Date(endDate);
     }
 
-    const [total, records] = await prisma.$transaction([
+    const [total, records] = await Promise.all([
       prisma.financialRecord.count({ where: whereParams }),
       prisma.financialRecord.findMany({
         where: whereParams,
