@@ -4,26 +4,23 @@ const bcrypt = require('bcryptjs');
 async function main() {
   console.log('Starting database seed...');
 
-  // Reset database safely (delete relations first)
-  await prisma.financialRecord.deleteMany();
-  console.log('Cleared existing records...');
-  await prisma.user.deleteMany();
-  console.log('Cleared existing users...');
-
-  // Hash standard demo password
-  const passwordHash = await bcrypt.hash('password123', 10);
-
-  // 1. Create Core Role Users
-  const admin = await prisma.user.create({
-    data: { name: 'System Admin', email: 'admin@zorvyn.com', password: passwordHash, role: 'admin' }
+  // 1. Create or Update Core Role Users (Idempotent seed using upsert)
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@zorvyn.com' },
+    update: {},
+    create: { name: 'System Admin', email: 'admin@zorvyn.com', password: passwordHash, role: 'admin' }
   });
 
-  const analyst = await prisma.user.create({
-    data: { name: 'Finance Analyst', email: 'analyst@zorvyn.com', password: passwordHash, role: 'analyst' }
+  const analyst = await prisma.user.upsert({
+    where: { email: 'analyst@zorvyn.com' },
+    update: {},
+    create: { name: 'Finance Analyst', email: 'analyst@zorvyn.com', password: passwordHash, role: 'analyst' }
   });
 
-  const viewer = await prisma.user.create({
-    data: { name: 'Readonly Viewer', email: 'viewer@zorvyn.com', password: passwordHash, role: 'viewer' }
+  const viewer = await prisma.user.upsert({
+    where: { email: 'viewer@zorvyn.com' },
+    update: {},
+    create: { name: 'Readonly Viewer', email: 'viewer@zorvyn.com', password: passwordHash, role: 'viewer' }
   });
 
   console.log('Base users seeded successfully.');
