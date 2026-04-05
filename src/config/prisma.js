@@ -1,18 +1,22 @@
-const { PrismaClient } = require("@prisma/client");
+const { Pool } = require('pg');
+const { PrismaPg } = require('@prisma/adapter-pg');
+const { PrismaClient } = require('@prisma/client');
+require('dotenv').config();
 
 const globalForPrisma = globalThis;
 
-// Reuse the same Prisma instance across hot-reloads in development
-// to avoid exhausting the connection pool.
-const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
-    datasources: { db: { url: process.env.DATABASE_URL } },
+let prisma = globalForPrisma.prisma;
+
+if (!prisma) {
+  // Prisma v7 explicitly requires using a driver adapter for network connections
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const adapter = new PrismaPg(pool);
+
+  prisma = new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
+}
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
