@@ -57,6 +57,10 @@ const updateUserStatus = async (req, res, next) => {
     const userId = parseInt(req.params.id);
     const { status } = req.body;
 
+    if (userId === req.user.id) {
+      return sendError(res, 'Cannot modify your own account status', 400);
+    }
+
     const user = await prisma.user.update({
       where: { id: userId },
       data: { status },

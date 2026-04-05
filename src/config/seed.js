@@ -1,10 +1,8 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('./prisma');
 const bcrypt = require('bcryptjs');
 
-const prisma = new PrismaClient();
-
 async function main() {
-  console.log('🌱 Starting database seed...');
+  console.log('Starting database seed...');
 
   // Reset database safely (delete relations first)
   await prisma.financialRecord.deleteMany();
@@ -28,7 +26,7 @@ async function main() {
     data: { name: 'Readonly Viewer', email: 'viewer@zorvyn.com', password: passwordHash, role: 'viewer' }
   });
 
-  console.log('✅ Base users seeded successfully.');
+  console.log('Base users seeded successfully.');
 
   // 2. Create Realistic Financial Data
   const now = new Date();
@@ -50,10 +48,10 @@ async function main() {
     data: demoRecords
   });
 
-  console.log('✅ Pre-populated financial records seeded successfully.');
+  console.log('Pre-populated financial records seeded successfully.');
 
   console.log('\n=============================================');
-  console.log('🎉 Seeding Complete! You can login with:\n');
+  console.log('Seeding Complete! You can login with:\n');
   console.log('   Admin:   admin@zorvyn.com   / password123');
   console.log('   Analyst: analyst@zorvyn.com / password123');
   console.log('   Viewer:  viewer@zorvyn.com  / password123');
@@ -62,7 +60,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error('❌ Failed to seed database:\n', e);
+    console.error('Failed to seed database:\n', e);
     process.exit(1);
   })
   .finally(async () => {

@@ -8,11 +8,11 @@ const router = Router();
 
 router.use(authenticate); // Require login for all record routes
 
-// ─── Shared Access (Analysts and Admins) ──────────────────────────────────────
+// Shared Access (Viewers, Analysts, Admins) 
 
 router.get(
   "/",
-  authorize('analyst', 'admin'),
+  authorize('viewer', 'analyst', 'admin'),
   [
     query('type').optional().isIn(['income', 'expense']).withMessage('Type must be income or expense'),
     query('startDate').optional().isISO8601().withMessage('Invalid startDate format'),
@@ -26,7 +26,7 @@ router.get(
 
 router.get(
   "/:id",
-  authorize('analyst', 'admin'),
+  authorize('viewer', 'analyst', 'admin'),
   [
     param('id').isInt().withMessage('Record ID must be an integer'),
     validate
@@ -34,11 +34,10 @@ router.get(
   getRecordById
 );
 
-// ─── Admin Only Access (Manage Records) ────────────────────────────────────────
-
+// Manage Access (Analysts and Admins) 
 router.post(
   "/",
-  authorize('admin'),
+  authorize('analyst', 'admin'),
   [
     body('amount').isFloat({ min: 0.01 }).withMessage('Amount must be greater than 0'),
     body('type').isIn(['income', 'expense']).withMessage('Type must be income or expense'),
@@ -52,10 +51,11 @@ router.post(
 
 router.put(
   "/:id",
-  authorize('admin'),
+  authorize('analyst', 'admin'),
   [
     param('id').isInt().withMessage('Record ID must be an integer'),
     body('amount').optional().isFloat({ min: 0.01 }).withMessage('Amount must be greater than 0'),
+    body('category').optional().trim().notEmpty().withMessage('Category cannot be empty'),
     body('type').optional().isIn(['income', 'expense']).withMessage('Type must be income or expense'),
     body('date').optional().isISO8601().withMessage('Valid date is required'),
     validate

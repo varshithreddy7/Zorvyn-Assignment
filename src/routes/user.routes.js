@@ -23,7 +23,7 @@ router.get(
   getUserById
 );
 
-router.put(
+router.patch(
   "/:id/role", 
   [
     param('id').isInt().withMessage('User ID must be an integer'),
@@ -33,7 +33,7 @@ router.put(
   updateUserRole
 );
 
-router.put(
+router.patch(
   "/:id/status", 
   [
     param('id').isInt().withMessage('User ID must be an integer'),
