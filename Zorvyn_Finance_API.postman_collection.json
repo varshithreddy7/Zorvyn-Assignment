@@ -281,7 +281,7 @@
 				{
 					"name": "Update User Role",
 					"request": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -309,7 +309,7 @@
 				{
 					"name": "Update User Status",
 					"request": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
