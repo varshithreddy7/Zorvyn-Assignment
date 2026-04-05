@@ -4,6 +4,9 @@ const bcrypt = require('bcryptjs');
 async function main() {
   console.log('Starting database seed...');
 
+  // Hash standard demo password
+  const passwordHash = await bcrypt.hash('password123', 10);
+
   // 1. Create or Update Core Role Users (Idempotent seed using upsert)
   const admin = await prisma.user.upsert({
     where: { email: 'admin@zorvyn.com' },
