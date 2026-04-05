@@ -2,12 +2,11 @@ const prisma = require('../config/prisma');
 
 class DashboardService {
   async getSummary() {
-    // 1. Raw SQL query for aggregation utilizing COALESCE and ::float
-    // This perfectly prevents a 'null' break if no records exist
     const [summaryRaw] = await prisma.$queryRaw`
       SELECT 
         COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0)::float as "totalIncome",
-        COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0)::float as "totalExpense"
+        COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0)::float as "totalExpense",
+        COUNT(*)::int as "totalRecords"
       FROM "financial_records" 
       WHERE "deletedAt" IS NULL
     `;
@@ -15,8 +14,19 @@ class DashboardService {
     const totalIncome = summaryRaw.totalIncome || 0;
     const totalExpense = summaryRaw.totalExpense || 0;
     const netBalance = totalIncome - totalExpense;
+    const totalRecords = summaryRaw.totalRecords || 0;
 
-    // 2. Fetch category-wise breakdowns
+    const monthlyTrends = await prisma.$queryRaw`
+      SELECT 
+        TO_CHAR("date", 'YYYY-MM') as month,
+        COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0)::float as "income",
+        COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0)::float as "expense"
+      FROM "financial_records"
+      WHERE "deletedAt" IS NULL
+      GROUP BY TO_CHAR("date", 'YYYY-MM')
+      ORDER BY month ASC
+    `;
+
     const categoryAggregations = await prisma.financialRecord.groupBy({
       by: ['category', 'type'],
       where: { deletedAt: null },
@@ -29,18 +39,16 @@ class DashboardService {
       total: Number(cat._sum.amount || 0)
     }));
 
-    // 3. Fetch latest activity feed
     const recentActivity = await prisma.financialRecord.findMany({
       where: { deletedAt: null },
       orderBy: { createdAt: 'desc' },
-      take: 5,
-      select: {
-        id: true, amount: true, type: true, category: true, date: true, notes: true
-      }
+      take: 10,
+      select: { id: true, amount: true, type: true, category: true, date: true, notes: true }
     });
 
     return {
-      summary: { totalIncome, totalExpense, netBalance },
+      summary: { totalIncome, totalExpense, netBalance, totalRecords },
+      monthlyTrends,
       categoryBreakdown,
       recentActivity
     };

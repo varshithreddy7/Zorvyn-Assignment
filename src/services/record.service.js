@@ -12,24 +12,28 @@ class RecordService {
   }
 
   async getRecords(query) {
-    const { type, category, startDate, endDate, page = 1, limit = 10 } = query;
+    const { type, category, dateFrom, dateTo, page = 1, limit = 10 } = query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const take = parseInt(limit);
     const whereParams = { deletedAt: null };
+    
     if (type) whereParams.type = type;
-    if (category) whereParams.category = category;
-    if (startDate || endDate) {
+    if (category) whereParams.category = { contains: category, mode: 'insensitive' };
+    
+    if (dateFrom || dateTo) {
       whereParams.date = {};
-      if (startDate) whereParams.date.gte = new Date(startDate);
-      if (endDate) whereParams.date.lte = new Date(endDate);
+      if (dateFrom) whereParams.date.gte = new Date(dateFrom);
+      if (dateTo) whereParams.date.lte = new Date(dateTo);
     }
+    
     const [total, records] = await Promise.all([
       prisma.financialRecord.count({ where: whereParams }),
       prisma.financialRecord.findMany({
         where: whereParams, skip, take, orderBy: { date: 'desc' }, include: { createdBy: { select: { name: true, email: true } } }
       })
     ]);
-    return { pagination: { total, page: parseInt(page), pages: Math.ceil(total / take) }, records };
+    
+    return { meta: { total, page: parseInt(page), limit: parseInt(limit) }, records };
   }
 
   async getRecordById(id) {

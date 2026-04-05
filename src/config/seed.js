@@ -42,6 +42,7 @@ async function main() {
     { amount: 300, type: 'expense', category: 'Software', date: daysAgo(10), notes: 'Cloud hosting / SaaS', createdById: admin.id },
     { amount: 4500, type: 'income', category: 'Salary', date: daysAgo(2), notes: 'Monthly salary', createdById: admin.id },
     { amount: 1500, type: 'expense', category: 'Rent', date: daysAgo(1), notes: 'Office lease', createdById: admin.id },
+    { amount: 250, type: 'expense', category: 'Travel', date: daysAgo(45), notes: 'Flight ticket', createdById: admin.id },
   ];
 
   await prisma.financialRecord.createMany({
