@@ -45,6 +45,10 @@ async function main() {
     { amount: 250, type: 'expense', category: 'Travel', date: daysAgo(45), notes: 'Flight ticket', createdById: admin.id },
   ];
 
+  // Clear old seed records specifically authored by the demo admin, preventing duplicates
+  // This is entirely safe because it never touches genuine records authored by organic users.
+  await prisma.financialRecord.deleteMany({ where: { createdById: admin.id } });
+
   await prisma.financialRecord.createMany({
     data: demoRecords
   });
