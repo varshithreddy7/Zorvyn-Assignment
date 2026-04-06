@@ -87,7 +87,7 @@ A production-ready Node.js backend providing financial record management, robust
 | GET    | `/api/v1/records`       | Yes           | Viewer   | Retrieve paginated & filtered records |
 | GET    | `/api/v1/records/:id`   | Yes           | Viewer   | Retrieve single record |
 | POST   | `/api/v1/records`       | Yes           | Analyst  | Create new financial record |
-| PUT    | `/api/v1/records/:id`   | Yes           | Analyst  | Update record details |
+| PATCH  | `/api/v1/records/:id`   | Yes           | Analyst  | Update record details |
 | DELETE | `/api/v1/records/:id`   | Yes           | Admin    | Soft delete a record |
 
 ### User Management

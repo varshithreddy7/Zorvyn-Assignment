@@ -6,12 +6,12 @@ const express = require("express");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 
-const authRoutes = require("./src/routes/auth.routes");
-const userRoutes = require("./src/routes/user.routes");
-const recordRoutes = require("./src/routes/record.routes");
-const dashboardRoutes = require("./src/routes/dashboard.routes");
+const authRoutes = require("./routes/auth.routes");
+const userRoutes = require("./routes/user.routes");
+const recordRoutes = require("./routes/record.routes");
+const dashboardRoutes = require("./routes/dashboard.routes");
 
-const { sendError } = require("./src/utils/response");
+const { sendError } = require("./utils/response");
 
 //  App Setup 
 
@@ -34,7 +34,7 @@ const limiter = rateLimit({
     message: "Too many requests. Please try again later.",
   },
 });
-app.use(limiter);
+
 
 // Health Check 
 

@@ -49,7 +49,7 @@ router.post(
   createRecord
 );
 
-router.put(
+router.patch(
   "/:id",
   authorize('analyst', 'admin'),
   [
